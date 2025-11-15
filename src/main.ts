@@ -1,3 +1,3 @@
-import { startServer } from "./shared/infra/http/server";
+import { bootstrap } from "./shared/infra/http/server";
 
-startServer();
+bootstrap();
