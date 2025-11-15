@@ -1,0 +1,15 @@
+services:
+    postgres:
+        image: bitnami/postgresql:latest
+        environment:
+            POSTGRESQL_USERNAME: ${DB_USER}
+            POSTGRESQL_PASSWORD: ${DB_PASS}
+            POSTGRESQL_DATABASE: ${DB_NAME}
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/bitnami/postgresql
+
+volumes:
+    postgres_data:
+        driver: local
