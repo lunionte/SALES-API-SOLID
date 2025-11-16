@@ -21,4 +21,6 @@ if (_env.success === false) {
     process.exit(1);
 }
 
-export const env = _env.data;
+const env = _env.data;
+
+export { env };
