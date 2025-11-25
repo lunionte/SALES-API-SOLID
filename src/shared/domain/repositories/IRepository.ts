@@ -19,7 +19,7 @@ export type SearchOutput<Model> = {
 export interface IRepository<Model, CreateProps> {
     // cria uma instância de um modelo de dados
     create(props: CreateProps): Model;
-    save(model: Model): Promise<Model>;
+    insert(model: Model): Promise<Model>;
     findById(id: string): Promise<Model>;
     update(model: Model): Promise<Model>;
     delete(id: string): Promise<void>;
