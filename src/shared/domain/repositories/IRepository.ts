@@ -16,9 +16,9 @@ export type SearchOutput<Model> = {
     perPage: number;
     total: number;
     currentPage: number;
-    sort: string;
-    sortDir: string;
-    filter: string;
+    sort: string | null;
+    sortDir: string | null;
+    filter: string | null;
 };
 
 export interface IRepository<Model, CreateProps> {
