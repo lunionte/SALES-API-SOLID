@@ -1,13 +1,18 @@
 export type SearchInput = {
+    // qual pagina quer começar a ver
     page?: number;
+    // quantos itens aparecem por página
     perPage?: number;
+    // por ex: ?sort=name ou ?sort=createdAt
     sort?: string;
+    // direção da ordenação, por ex asc e desc
     sortDir?: string;
+    // texto live pra buscar em vários campos
     filter?: string;
 };
 
 export type SearchOutput<Model> = {
-    itens: Model[];
+    items: Model[];
     perPage: number;
     total: number;
     currentPage: number;
