@@ -16,7 +16,10 @@
         "noUnusedLocals": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "paths": {
+            "@/*": ["./src/*"]
+        }
     },
     "compileOnSave": true,
     "include": ["src/**/*"],
