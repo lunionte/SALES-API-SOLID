@@ -2,65 +2,48 @@ import { randomUUID } from "node:crypto";
 import { NotFoundError } from "../errors/not-found.error";
 import { IRepository, SearchInput, SearchOutput } from "./IRepository";
 
-export type Model = {
-    id: string;
+export type ModelProps = {
+    id?: string;
     [key: string]: any;
 };
-
-export type ModelInput = Omit<Model, "id">;
 
 export type CreateProps = {
     [key: string]: any;
 };
 
-export abstract class InMemoryRepository implements IRepository<Model, CreateProps> {
+export abstract class InMemoryRepository<Model extends ModelProps> implements IRepository<Model, CreateProps> {
     items: Model[] = [];
-
-    // createdAt, name etc
     sortableFields: string[] = [];
 
-    // POR SER REPO EM MEMÓRIA, SEMPRE LANÇAR ERRORS (NORMALMENTE USADO EM TESTS)
-    // NUNCA LANÇAR EXCESSÕES EM REPOS DE PRODUÇÃO (REPO PRISMA, TYPEORM ETC)
-    protected async _get(id: string): Promise<Model> {
-        const model = this.items.find((i) => i.id === id);
-        if (!model) {
-            throw new NotFoundError(`Modelo não encontrado procurando pelo ID ${id}`);
-        }
-        return model;
-    }
-
-    // só cria o objeto em memória | só cria entidade nova (sem ID)
-    // vai ser usado no useCase, n aqui
     create(props: CreateProps): Model {
         const model = {
             id: randomUUID(),
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            create_at: new Date(),
+            updated_at: new Date(),
             ...props,
         };
-        return model as Model;
+        return model as unknown as Model;
     }
 
-    // persiste em memória | JÁ RECEBE COM ID, CREATEDAT ETC...
     async insert(model: Model): Promise<Model> {
         this.items.push(model);
-        return model as Model;
+        return model;
     }
+
     async findById(id: string): Promise<Model> {
-        return await this._get(id);
+        return this._get(id);
     }
+
     async update(model: Model): Promise<Model> {
-        const { id } = model;
-        // se n tiver vai lançar a excessão
-        await this._get(id);
-        const index = this.items.findIndex((i) => i.id === id);
-        if (index === -1) throw new NotFoundError(`Entidade com ID ${id} não encontrado`);
+        await this._get(model.id!);
+        const index = this.items.findIndex((item) => item.id === model.id);
         this.items[index] = model;
         return model;
     }
+
     async delete(id: string): Promise<void> {
         await this._get(id);
-        const index = this.items.findIndex((i) => i.id === id);
+        const index = this.items.findIndex((item) => item.id === id);
         this.items.splice(index, 1);
     }
 
@@ -72,9 +55,8 @@ export abstract class InMemoryRepository implements IRepository<Model, CreatePro
         const filter = props.filter ?? null;
 
         const filteredItems = await this.applyFilter(this.items, filter);
-        const ordernedItems = await this.applySort(filteredItems, sort, sortDir);
-        const paginatedItems = await this.applyPaginate(ordernedItems, page, perPage);
-
+        const orderedItems = await this.applySort(filteredItems, sort, sortDir);
+        const paginatedItems = await this.applyPaginate(orderedItems, page, perPage);
         return {
             items: paginatedItems,
             total: filteredItems.length,
@@ -117,7 +99,15 @@ export abstract class InMemoryRepository implements IRepository<Model, CreatePro
 
     protected async applyPaginate(items: Model[], page: number, perPage: number): Promise<Model[]> {
         const start = (page - 1) * perPage;
-        const end = start + perPage;
-        return items.slice(start, end);
+        const limit = start + perPage;
+        return items.slice(start, limit);
+    }
+
+    protected async _get(id: string): Promise<Model> {
+        const model = this.items.find((item) => item.id === id);
+        if (!model) {
+            throw new NotFoundError(`Model not found using ID ${id}`);
+        }
+        return model;
     }
 }
