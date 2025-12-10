@@ -18,8 +18,8 @@ export abstract class InMemoryRepository<Model extends ModelProps> implements IR
     create(props: CreateProps): Model {
         const model = {
             id: randomUUID(),
-            create_at: new Date(),
-            updated_at: new Date(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
             ...props,
         };
         return model as unknown as Model;
