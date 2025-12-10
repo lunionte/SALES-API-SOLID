@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { InMemoryRepository } from "./In-memory.repository";
+import { InMemoryRepository } from "./in-memory.repository";
 
 type StubModelProps = {
     id: string;
@@ -33,19 +33,23 @@ describe("InMemoryRepository unit tests", () => {
     beforeEach(() => {
         sut = new StubInMemoryRepository();
         props = {
-            name: "test",
+            name: "test nameee",
             price: 10,
         };
         model = {
             id: randomUUID(),
+            ...props,
             createdAt: new Date(),
             updatedAt: new Date(),
-            ...props,
         };
     });
 
     it("should create a new model", () => {
         const result = sut.create(props);
-        expect(result.name).toStrictEqual(model.name);
+        expect(result.id).toBeDefined();
+        expect(result.name).toEqual(model.name);
+        expect(result.price).toEqual(model.price);
+        expect(result.createdAt).toBeInstanceOf(Date);
+        expect(result.updatedAt).toBeInstanceOf(Date);
     });
 });
