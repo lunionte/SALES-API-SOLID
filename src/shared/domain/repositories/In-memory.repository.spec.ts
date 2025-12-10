@@ -52,4 +52,10 @@ describe("InMemoryRepository unit tests", () => {
         expect(result.createdAt).toBeInstanceOf(Date);
         expect(result.updatedAt).toBeInstanceOf(Date);
     });
+
+    it("should insert a new model", async () => {
+        const result = await sut.insert(props);
+        console.log("Log:", sut.items[0]);
+        expect(result).toStrictEqual(sut.items[0]);
+    });
 });
