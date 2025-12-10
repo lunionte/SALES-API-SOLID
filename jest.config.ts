@@ -1,7 +1,8 @@
 import { pathsToModuleNameMapper } from "ts-jest";
 import { compilerOptions } from "./tsconfig.json";
 
-export default {
+// como é CommonJS, não pode ser export default
+module.exports = {
     // o ts-jest compila o typescript antes de rodar os testes
     preset: "ts-jest",
 
