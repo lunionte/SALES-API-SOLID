@@ -68,4 +68,10 @@ describe("InMemoryRepository unit tests", () => {
             new NotFoundError("Model not found using ID invalid_id")
         );
     });
+
+    it("should find a model by id", async () => {
+        const data = await sut.insert(model);
+        const result = await sut.findById(data.id);
+        expect(result).toStrictEqual(data);
+    });
 });
