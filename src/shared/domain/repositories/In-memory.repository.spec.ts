@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { InMemoryRepository } from "./in-memory.repository";
+import { NotFoundError } from "../errors/not-found.error";
 
 type StubModelProps = {
     id: string;
@@ -30,6 +31,7 @@ describe("InMemoryRepository unit tests", () => {
     let model: StubModelProps;
     let props: any;
 
+    // antes de cada teste...
     beforeEach(() => {
         sut = new StubInMemoryRepository();
         props = {
@@ -57,5 +59,13 @@ describe("InMemoryRepository unit tests", () => {
         const result = await sut.insert(props);
         console.log("Log:", sut.items[0]);
         expect(result).toStrictEqual(sut.items[0]);
+    });
+
+    it("should throw a new error when id isn't found", async () => {
+        // O teste passa pq o erro é disparado corretamente
+        // caso o erro não fosse disparado, deveria falhar
+        await expect(sut.findById("invalid_id")).rejects.toThrow(
+            new NotFoundError("Model not found using ID invalid_id")
+        );
     });
 });
