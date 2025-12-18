@@ -12,8 +12,8 @@ export type CreateProps = {
 };
 
 export abstract class InMemoryRepository<Model extends ModelProps> implements IRepository<Model, CreateProps> {
-    items: Model[] = [];
-    sortableFields: string[] = [];
+    public items: Model[] = [];
+    public sortableFields: string[] = [];
 
     create(props: CreateProps): Model {
         const model = {
