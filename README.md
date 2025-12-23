@@ -221,7 +221,7 @@ Este projeto está sob a licença ISC.
 
 ## 👨‍💻 Autor
 
-[Seu Nome/Usuário]
+Italo
 
 ---
 
