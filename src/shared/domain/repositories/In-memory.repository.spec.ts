@@ -65,11 +65,6 @@ describe("InMemoryRepository unit tests", () => {
     });
 
     describe("findById", () => {
-        it("should find a model by id", async () => {
-            const data = await sut.insert(model);
-            const result = await sut.findById(data.id);
-            expect(result).toStrictEqual(data);
-        });
         it("should throw a new error when id isn't found", async () => {
             // O teste passa pq o erro é disparado corretamente
             // caso o erro não fosse disparado, deveria falhar
@@ -78,19 +73,17 @@ describe("InMemoryRepository unit tests", () => {
             );
         });
 
-        it("should throw a new error when id isn't found", async () => {
-            await expect(sut.update(model)).rejects.toThrow(new NotFoundError(`Model not found using ID ${model.id}`));
-        });
-
-        it("should throw a new error when id isn't found", async () => {
-            await expect(sut.delete("fake_id")).rejects.toThrow(new NotFoundError("Model not found using ID fake_id"));
-
-            const id = randomUUID();
-            await expect(sut.delete(id)).rejects.toThrow(new NotFoundError(`Model not found using ID ${id}`));
+        it("should find a model by id", async () => {
+            const data = await sut.insert(model);
+            const result = await sut.findById(data.id);
+            expect(result).toStrictEqual(data);
         });
     });
 
     describe("update", () => {
+        it("should throw a new error when id isn't found", async () => {
+            await expect(sut.update(model)).rejects.toThrow(new NotFoundError(`Model not found using ID ${model.id}`));
+        });
         it("should update a model", async () => {
             const data = await sut.insert(model);
             const updatedModel = {
@@ -108,6 +101,12 @@ describe("InMemoryRepository unit tests", () => {
     });
 
     describe("delete", () => {
+        it("should throw a new error when id isn't found", async () => {
+            await expect(sut.delete("fake_id")).rejects.toThrow(new NotFoundError("Model not found using ID fake_id"));
+
+            const id = randomUUID();
+            await expect(sut.delete(id)).rejects.toThrow(new NotFoundError(`Model not found using ID ${id}`));
+        });
         it("should delete a model by id", async () => {
             const data = await sut.insert(model);
             expect(data).toStrictEqual(sut.items[0]);
