@@ -93,4 +93,8 @@ describe("InMemoryRepository unit tests", () => {
 
         expect(result).toStrictEqual(sut.items[0]);
     });
+
+    it("should throw a new error when id isn't found", async () => {
+        await expect(sut.delete("fake_id")).rejects.toThrow(new NotFoundError("Model not found using ID fake_id"));
+    });
 });
