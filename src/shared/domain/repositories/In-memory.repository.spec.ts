@@ -46,65 +46,73 @@ describe("InMemoryRepository unit tests", () => {
         };
     });
 
-    it("should create a new model", () => {
-        const result = sut.create(props);
-        expect(result.id).toBeDefined();
-        expect(result.name).toEqual(model.name);
-        expect(result.price).toEqual(model.price);
-        expect(result.createdAt).toBeInstanceOf(Date);
-        expect(result.updatedAt).toBeInstanceOf(Date);
+    describe("create", () => {
+        it("should create a new model", () => {
+            const result = sut.create(props);
+            expect(result.id).toBeDefined();
+            expect(result.name).toEqual(model.name);
+            expect(result.price).toEqual(model.price);
+            expect(result.createdAt).toBeInstanceOf(Date);
+            expect(result.updatedAt).toBeInstanceOf(Date);
+        });
     });
 
-    it("should insert a new model", async () => {
-        const result = await sut.insert(props);
-        console.log("Log:", sut.items[0]);
-        expect(result).toStrictEqual(sut.items[0]);
+    describe("insert", () => {
+        it("should insert a new model", async () => {
+            const result = await sut.insert(props);
+            expect(result).toStrictEqual(sut.items[0]);
+        });
     });
 
-    it("should throw a new error when id isn't found", async () => {
-        // O teste passa pq o erro é disparado corretamente
-        // caso o erro não fosse disparado, deveria falhar
-        await expect(sut.findById("invalid_id")).rejects.toThrow(
-            new NotFoundError("Model not found using ID invalid_id")
-        );
+    describe("findById", () => {
+        it("should find a model by id", async () => {
+            const data = await sut.insert(model);
+            const result = await sut.findById(data.id);
+            expect(result).toStrictEqual(data);
+        });
+        it("should throw a new error when id isn't found", async () => {
+            // O teste passa pq o erro é disparado corretamente
+            // caso o erro não fosse disparado, deveria falhar
+            await expect(sut.findById("invalid_id")).rejects.toThrow(
+                new NotFoundError("Model not found using ID invalid_id")
+            );
+        });
+
+        it("should throw a new error when id isn't found", async () => {
+            await expect(sut.update(model)).rejects.toThrow(new NotFoundError(`Model not found using ID ${model.id}`));
+        });
+
+        it("should throw a new error when id isn't found", async () => {
+            await expect(sut.delete("fake_id")).rejects.toThrow(new NotFoundError("Model not found using ID fake_id"));
+
+            const id = randomUUID();
+            await expect(sut.delete(id)).rejects.toThrow(new NotFoundError(`Model not found using ID ${id}`));
+        });
     });
 
-    it("should find a model by id", async () => {
-        const data = await sut.insert(model);
-        const result = await sut.findById(data.id);
-        expect(result).toStrictEqual(data);
+    describe("update", () => {
+        it("should update a model", async () => {
+            const data = await sut.insert(model);
+            const updatedModel = {
+                id: data.id,
+                name: "updated Name",
+                price: 10000,
+                createdAt: data.createdAt,
+                updatedAt: data.updatedAt,
+            };
+
+            const result = await sut.update(updatedModel);
+
+            expect(result).toStrictEqual(sut.items[0]);
+        });
     });
 
-    it("should throw a new error when id isn't found", async () => {
-        await expect(sut.update(model)).rejects.toThrow(new NotFoundError(`Model not found using ID ${model.id}`));
-    });
-
-    it("should update a model", async () => {
-        const data = await sut.insert(model);
-        const updatedModel = {
-            id: data.id,
-            name: "updated Name",
-            price: 10000,
-            createdAt: data.createdAt,
-            updatedAt: data.updatedAt,
-        };
-
-        const result = await sut.update(updatedModel);
-
-        expect(result).toStrictEqual(sut.items[0]);
-    });
-
-    it("should throw a new error when id isn't found", async () => {
-        await expect(sut.delete("fake_id")).rejects.toThrow(new NotFoundError("Model not found using ID fake_id"));
-
-        const id = randomUUID();
-        await expect(sut.delete(id)).rejects.toThrow(new NotFoundError(`Model not found using ID ${id}`));
-    });
-
-    it("should delete a model by id", async () => {
-        const data = await sut.insert(model);
-        expect(data).toStrictEqual(sut.items[0]);
-        await sut.delete(data.id);
-        expect(sut.items[0]).toBeUndefined();
+    describe("delete", () => {
+        it("should delete a model by id", async () => {
+            const data = await sut.insert(model);
+            expect(data).toStrictEqual(sut.items[0]);
+            await sut.delete(data.id);
+            expect(sut.items[0]).toBeUndefined();
+        });
     });
 });
