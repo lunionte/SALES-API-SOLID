@@ -96,5 +96,15 @@ describe("InMemoryRepository unit tests", () => {
 
     it("should throw a new error when id isn't found", async () => {
         await expect(sut.delete("fake_id")).rejects.toThrow(new NotFoundError("Model not found using ID fake_id"));
+
+        const id = randomUUID();
+        await expect(sut.delete(id)).rejects.toThrow(new NotFoundError(`Model not found using ID ${id}`));
+    });
+
+    it("should delete a model by id", async () => {
+        const data = await sut.insert(model);
+        expect(data).toStrictEqual(sut.items[0]);
+        await sut.delete(data.id);
+        expect(sut.items[0]).toBeUndefined();
     });
 });
